@@ -1,11 +1,9 @@
 from aqt import mw
 from aqt.utils import showInfo
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-import PyPDF2
 import re
 
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))
+from ._vendor.pypdf import PdfReader
 
 def process_pdf():
     # Open a file dialog to get the path of the selected PDF file
@@ -29,7 +27,7 @@ def process_selected_pdf(file_path):
     # Add your PDF processing logic here
     # For example, you can extract text, make API calls, etc.
     raw_text = extract_text_from_pdf(file_path)
-    clean_and_preprocess_text(raw_text)
+    #clean_and_preprocess_text(raw_text)
 
 def show_info(message):
     # Display an information message to the user
@@ -46,20 +44,23 @@ def extract_text_from_pdf(pdf_path):
         str: Extracted text content.
     """
     text = ""
-
     try:
         # Open the PDF file
         with open(pdf_path, 'rb') as file:
             # Create a PDF reader object
-            pdf_reader = PyPDF2.PdfFileReader(file)
-            
+            pdf_reader = PdfReader(file)
+
             # Iterate through pages
-            for page_number in range(pdf_reader.numPages):
+            for page_number in range(len(pdf_reader.pages)):
                 # Extract text from the page
-                text += pdf_reader.getPage(page_number).extractText()
+                text += pdf_reader.pages[page_number].extract_text()
 
     except Exception as e:
-        print(f"Error extracting text from PDF: {e}")
+        print({e})
+
+
+    with open("/Users/masonfox/Downloads/anki-raw.txt", "w", encoding="utf-8") as file:
+        file.write(text)
 
     return text
 
@@ -77,7 +78,7 @@ def clean_and_preprocess_text(raw_text):
     cleaned_text = re.sub(r"[^a-zA-Z0-9\s]", "", raw_text)
     cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
 
-    with open("output_file.txt", "w", encoding="utf-8") as file:
+    with open("/Users/masonfox/Downloads/anki-clean.txt", "w", encoding="utf-8") as file:
         file.write(cleaned_text)
 
     return cleaned_text
