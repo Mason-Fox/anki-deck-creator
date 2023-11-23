@@ -1,0 +1,11 @@
+{
+    "package": "TestAddOn",
+    "name": "Test Add-On",
+    "description": "Description of Test add-on",
+    "author": "Mason Fox",
+    "version": "1.0.0",
+    "minAnkiVersion": "2.1.0",
+    "docs": "https://link.to.your.documentation",
+    "license": "MIT",
+    "tags": ["example", "ankiaddon"]
+}
