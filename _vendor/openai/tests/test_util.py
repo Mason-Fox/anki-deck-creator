@@ -9,13 +9,13 @@ from TestAddOn._vendor.openai import util
 
 @pytest.fixture(scope="function")
 def api_key_file():
-    saved_path = openai.api_key_path
+    saved_path =TestAddOn._vendor.openai.api_key_path
     try:
         with NamedTemporaryFile(prefix="openai-api-key", mode="wt") as tmp:
-            openai.api_key_path = tmp.name
+           TestAddOn._vendor.openai.api_key_path = tmp.name
             yield tmp
     finally:
-        openai.api_key_path = saved_path
+       TestAddOn._vendor.openai.api_key_path = saved_path
 
 
 def test_openai_api_key_path(api_key_file) -> None:

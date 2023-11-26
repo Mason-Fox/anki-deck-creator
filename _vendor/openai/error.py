@@ -1,4 +1,4 @@
-import TestAddOn._vendor.openai
+import TestAddOn._vendor.openai as openai
 
 
 class OpenAIError(Exception):

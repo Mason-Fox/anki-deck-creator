@@ -72,7 +72,7 @@ class APIResource(OpenAIObject):
                 " `unicode`)" % (type(self).__name__, id, type(id)),
                 "id",
             )
-        api_version = self.api_version or openai.api_version
+        api_version = self.api_version or TestAddOn._vendor.openai.api_type 
         extn = quote_plus(id)
 
         if self.typed_api_type in (ApiType.AZURE, ApiType.AZURE_AD):
@@ -166,7 +166,7 @@ class APIResource(OpenAIObject):
         typed_api_type = (
             ApiType.from_str(api_type)
             if api_type
-            else ApiType.from_str(openai.api_type)
+            else ApiType.from_str(TestAddOn._vendor.openai.api_type )
         )
-        typed_api_version = api_version or openai.api_version
+        typed_api_version = api_version or TestAddOn._vendor.openai.api_type 
         return (typed_api_type, typed_api_version)

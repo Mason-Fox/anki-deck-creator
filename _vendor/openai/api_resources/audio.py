@@ -27,7 +27,7 @@ class Audio(APIResource):
     ):
         requestor = api_requestor.APIRequestor(
             api_key,
-            api_base=api_base or openai.api_base,
+            api_base=api_base or TestAddOn._vendor.openai.api_base ,
             api_type=api_type,
             api_version=api_version,
             organization=organization,

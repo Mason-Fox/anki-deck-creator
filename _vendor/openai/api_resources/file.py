@@ -26,7 +26,7 @@ class File(ListableAPIResource, DeletableAPIResource):
     ):
         requestor = api_requestor.APIRequestor(
             api_key,
-            api_base=api_base or openai.api_base,
+            api_base=api_base or TestAddOn._vendor.openai.api_base ,
             api_type=api_type,
             api_version=api_version,
             organization=organization,
@@ -127,7 +127,7 @@ class File(ListableAPIResource, DeletableAPIResource):
     ):
         requestor = api_requestor.APIRequestor(
             api_key,
-            api_base=api_base or openai.api_base,
+            api_base=api_base or TestAddOn._vendor.openai.api_base ,
             api_type=api_type,
             api_version=api_version,
             organization=organization,
@@ -229,7 +229,7 @@ class File(ListableAPIResource, DeletableAPIResource):
         """Find already uploaded files with the same name, size, and purpose."""
         all_files = cls.list(
             api_key=api_key,
-            api_base=api_base or openai.api_base,
+            api_base=api_base or TestAddOn._vendor.openai.api_base ,
             api_type=api_type,
             api_version=api_version,
             organization=organization,
@@ -252,7 +252,7 @@ class File(ListableAPIResource, DeletableAPIResource):
         all_files = (
             await cls.alist(
                 api_key=api_key,
-                api_base=api_base or openai.api_base,
+                api_base=api_base or TestAddOn._vendor.openai.api_base ,
                 api_type=api_type,
                 api_version=api_version,
                 organization=organization,

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 import re
 
 from ._vendor.pypdf import PdfReader
-import TestAddOn._vendor.openai
+import TestAddOn._vendor.openai as openai
 
 def process_pdf():
     # Open a file dialog to get the path of the selected PDF file
@@ -89,4 +89,15 @@ def clean_and_preprocess_text(raw_text):
     return cleaned_text
 
 def callGpt(text):
-    return None
+    openai.api_key = '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'
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt="What are some common python datatypes?",
+        max_tokens=50  # Adjust as needed
+    )
+
+    generated_text = response.choices[0].text.strip()
+
+    # Write the generated text to the file
+    with open('~/Downloads/anki-chatgpt-response.txt', 'w') as file:
+        file.write(generated_text)

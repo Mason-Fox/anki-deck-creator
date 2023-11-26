@@ -5,7 +5,7 @@ import sys
 from enum import Enum
 from typing import Optional
 
-import TestAddOn._vendor.openai
+import TestAddOn._vendor.openai as openai
 
 OPENAI_LOG = os.environ.get("OPENAI_LOG")
 

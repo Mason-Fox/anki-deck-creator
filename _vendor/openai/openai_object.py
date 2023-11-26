@@ -304,7 +304,7 @@ class OpenAIObject(dict):
         return (
             ApiType.from_str(self.api_type)
             if self.api_type
-            else ApiType.from_str(openai.api_type)
+            else ApiType.from_str(TestAddOn._vendor.openai.api_type )
         )
 
     # This class overrides __setitem__ to throw exceptions on inputs that it

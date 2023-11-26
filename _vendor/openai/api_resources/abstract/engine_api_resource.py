@@ -266,7 +266,7 @@ class EngineAPIResource(APIResource):
         params_connector = "?"
 
         if self.typed_api_type in (ApiType.AZURE, ApiType.AZURE_AD):
-            api_version = self.api_version or openai.api_version
+            api_version = self.api_version or TestAddOn._vendor.openai.api_type 
             if not api_version:
                 raise error.InvalidRequestError(
                     "An API version is required for the Azure API type."

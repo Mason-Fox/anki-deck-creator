@@ -29,7 +29,7 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import Literal
 
-import TestAddOn._vendor.openai
+import TestAddOn._vendor.openai as openai
 from TestAddOn._vendor.openai import error, util, version
 from TestAddOn._vendor.openai.openai_response import OpenAIResponse
 from TestAddOn._vendor.openai.util import ApiType
@@ -134,14 +134,14 @@ class APIRequestor:
         api_version=None,
         organization=None,
     ):
-        self.api_base = api_base or openai.api_base
+        self.api_base = api_base or openai.api_base 
         self.api_key = key or util.default_api_key()
         self.api_type = (
             ApiType.from_str(api_type)
             if api_type
-            else ApiType.from_str(openai.api_type)
+            else ApiType.from_str(openai.api_type )
         )
-        self.api_version = api_version or openai.api_version
+        self.api_version = api_version or openai.api_type 
         self.organization = organization or openai.organization
 
     @classmethod

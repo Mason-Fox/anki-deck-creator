@@ -59,13 +59,13 @@ def main():
     elif args.verbosity >= 2:
         logger.setLevel(logging.DEBUG)
 
-    openai.debug = True
+    TestAddOn._vendor.openai.debug = True
     if args.api_key is not None:
-        openai.api_key = args.api_key
+        TestAddOn._vendor.openai.api_key = args.api_key
     if args.api_base is not None:
-        openai.api_base = args.api_base
+        TestAddOn._vendor.openai.api_base  = args.api_base
     if args.organization is not None:
-        openai.organization = args.organization
+        TestAddOn._vendor.openai.organization = args.organization
     if args.proxy is not None:
         openai.proxy = {}
         for proxy in args.proxy:
