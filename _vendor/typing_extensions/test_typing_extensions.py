@@ -28,7 +28,7 @@ from typing import Generic
 from typing import no_type_check
 import warnings
 
-import typing_extensions
+import TestAddOn._vendor.typing_extensions
 from TestAddOn._vendor.typing_extensions import NoReturn, Any, ClassVar, Final, IntVar, Literal, Type, NewType, TypedDict, Self
 from TestAddOn._vendor.typing_extensions import TypeAlias, ParamSpec, Concatenate, ParamSpecArgs, ParamSpecKwargs, TypeGuard
 from TestAddOn._vendor.typing_extensions import Awaitable, AsyncIterator, AsyncContextManager, Required, NotRequired
@@ -1633,7 +1633,7 @@ class NewTypeTests(BaseTestCase):
                     pickle.dumps(UserAge, proto)
 
     def test_missing__name__(self):
-        code = ("import typing_extensions\n"
+        code = ("import TestAddOn._vendor.typing_extensions\n"
                 "NT = typing_extensions.NewType('NT', int)\n"
                 )
         exec(code, {})

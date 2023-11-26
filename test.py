@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 import re
 
 from ._vendor.pypdf import PdfReader
+from ._vendor.openai import OpenAI
 
 def process_pdf():
     # Open a file dialog to get the path of the selected PDF file
