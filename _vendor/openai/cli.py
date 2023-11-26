@@ -8,8 +8,8 @@ from typing import Optional
 import requests
 
 import TestAddOn._vendor.openai
-from TestAddOn._vendor.openai.upload_progress import BufferReader
-from TestAddOn._vendor.openai.validators import (
+from openai.upload_progress import BufferReader
+from openai.validators import (
     apply_necessary_remediation,
     apply_validators,
     get_validators,

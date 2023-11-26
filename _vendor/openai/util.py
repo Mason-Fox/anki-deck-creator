@@ -93,7 +93,7 @@ def logfmt(props):
 
 def get_object_classes():
     # This is here to avoid a circular dependency
-    from TestAddOn._vendor.openai.object_classes import OBJECT_CLASSES
+    from openai.object_classes import OBJECT_CLASSES
 
     return OBJECT_CLASSES
 

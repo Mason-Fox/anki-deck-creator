@@ -2,8 +2,8 @@ import os
 import sys
 from typing import Any, Callable, NamedTuple, Optional
 
-from TestAddOn._vendor.openai.datalib.pandas_helper import assert_has_pandas
-from TestAddOn._vendor.openai.datalib.pandas_helper import pandas as pd
+from openai.datalib.pandas_helper import assert_has_pandas
+from openai.datalib.pandas_helper import pandas as pd
 
 
 class Remediation(NamedTuple):

@@ -21,7 +21,7 @@ from typing import (
 )
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
-import TestAddOn._vendor.aiohttp 
+import TestAddOn._vendor.aiohttp
 import requests
 
 if sys.version_info >= (3, 8):

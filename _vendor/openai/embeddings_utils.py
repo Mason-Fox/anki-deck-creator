@@ -11,7 +11,7 @@ from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 import TestAddOn._vendor.openai
 from TestAddOn._vendor.openai.datalib.numpy_helper import numpy as np
-from TestAddOn._vendor.openai.datalib.pandas_helper import pandas as pd
+from openai.datalib.pandas_helper import pandas as pd
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))

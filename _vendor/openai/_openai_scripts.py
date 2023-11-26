@@ -5,7 +5,7 @@ import sys
 
 import TestAddOn._vendor.openai
 from TestAddOn._vendor.openai import version
-from TestAddOn._vendor.openai.cli import api_register, display_error, tools_register, wandb_register
+from openai.cli import api_register, display_error, tools_register, wandb_register
 
 logger = logging.getLogger()
 formatter = logging.Formatter("[%(asctime)s] %(message)s")

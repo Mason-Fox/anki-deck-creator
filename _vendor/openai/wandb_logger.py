@@ -15,7 +15,7 @@ if WANDB_AVAILABLE:
 
     from TestAddOn._vendor.openai import File, FineTune
     from TestAddOn._vendor.openai.datalib.numpy_helper import numpy as np
-    from TestAddOn._vendor.openai.datalib.pandas_helper import pandas as pd
+    from openai.datalib.pandas_helper import pandas as pd
 
 
 class WandbLogger:

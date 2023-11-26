@@ -5,7 +5,7 @@ import requests
 from pytest_mock import MockerFixture
 
 from TestAddOn._vendor.openai import Model
-from TestAddOn._vendor.openai.api_requestor import APIRequestor
+from openai.api_requestor import APIRequestor
 
 
 @pytest.mark.requestor
@@ -73,7 +73,7 @@ def test_requestor_azure_ad_headers() -> None:
 def test_requestor_cycle_sessions(mocker: MockerFixture) -> None:
     # HACK: we need to purge the _thread_context to not interfere
     # with other tests
-    from TestAddOn._vendor.openai.api_requestor import _thread_context
+    from openai.api_requestor import _thread_context
 
     delattr(_thread_context, "session")
 

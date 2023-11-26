@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 import re
 
 from ._vendor.pypdf import PdfReader
-from ._vendor.openai import OpenAI
+import TestAddOn._vendor.openai
 
 def process_pdf():
     # Open a file dialog to get the path of the selected PDF file
@@ -17,10 +17,12 @@ def process_pdf():
 
     if file_path:
         # Call a function to process the selected PDF file
-        process_selected_pdf(file_path)
+        text = process_selected_pdf(file_path)
     else:
         # Display a message if the user cancels the file dialog
         show_info("PDF processing canceled.")
+    
+    callGpt(text)
 
 def process_selected_pdf(file_path):
     # Placeholder function to process the selected PDF file
@@ -29,6 +31,8 @@ def process_selected_pdf(file_path):
     # For example, you can extract text, make API calls, etc.
     raw_text = extract_text_from_pdf(file_path)
     #clean_and_preprocess_text(raw_text)
+
+    return raw_text
 
 def show_info(message):
     # Display an information message to the user
@@ -84,3 +88,5 @@ def clean_and_preprocess_text(raw_text):
 
     return cleaned_text
 
+def callGpt(text):
+    return None

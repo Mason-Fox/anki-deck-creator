@@ -304,7 +304,7 @@ class TestClient:
 
     @property
     def session(self) -> ClientSession:
-        """An internal TestAddOn._vendor.aiohttp.ClientSession.
+        """An internal TestAddOn._vendor.TestAddOn._vendor.aiohttp.ClientSession.
 
         Unlike the methods on the TestClient, client session requests
         do not automatically include the host in the url queried, and
@@ -329,7 +329,7 @@ class TestClient:
     ) -> _RequestContextManager:
         """Routes a request to tested http server.
 
-        The interface is identical to TestAddOn._vendor.aiohttp.ClientSession.request,
+        The interface is identical to TestAddOn._vendor.TestAddOn._vendor.aiohttp.ClientSession.request,
         except the loop kwarg is overridden by the instance used by the
         test server.
 
@@ -367,7 +367,7 @@ class TestClient:
     def ws_connect(self, path: StrOrURL, **kwargs: Any) -> _WSRequestContextManager:
         """Initiate websocket connection.
 
-        The api corresponds to TestAddOn._vendor.aiohttp.ClientSession.ws_connect.
+        The api corresponds to TestAddOn._vendor.TestAddOn._vendor.aiohttp.ClientSession.ws_connect.
 
         """
         return _WSRequestContextManager(self._ws_connect(path, **kwargs))
