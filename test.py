@@ -3,8 +3,11 @@ from aqt.utils import showInfo
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 import re
 
-from ._vendor.pypdf import PdfReader
-import TestAddOn._vendor.openai as openai
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))
+
+from pypdf import PdfReader
+from openai import OpenAI
 
 def process_pdf():
     # Open a file dialog to get the path of the selected PDF file
@@ -22,7 +25,7 @@ def process_pdf():
         # Display a message if the user cancels the file dialog
         show_info("PDF processing canceled.")
     
-    callGpt(text)
+    callOpenAI(text)
 
 def process_selected_pdf(file_path):
     # Placeholder function to process the selected PDF file
@@ -88,16 +91,6 @@ def clean_and_preprocess_text(raw_text):
 
     return cleaned_text
 
-def callGpt(text):
-    openai.api_key = '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'
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt="What are some common python datatypes?",
-        max_tokens=50  # Adjust as needed
-    )
-
-    generated_text = response.choices[0].text.strip()
-
-    # Write the generated text to the file
-    with open('~/Downloads/anki-chatgpt-response.txt', 'w') as file:
-        file.write(generated_text)
+def callOpenAI():
+    client = OpenAI()
+    return None

@@ -1,4 +1,4 @@
 # anki-deck-creator
 
 TODO:
-Update openai to latest
+Fix/Understand pydantic-core
