@@ -1,4 +1,4 @@
 # anki-deck-creator
 
 TODO:
-Fix/Understand pydantic-core
+Error handling,  add a check for response format, config settings, documentation, release

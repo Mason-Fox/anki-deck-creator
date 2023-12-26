@@ -1,11 +1,11 @@
 {
-    "package": "TestAddOn",
-    "name": "Test Add-On",
-    "description": "Description of Test add-on",
+    "package": "deck_creator",
+    "name": "Deck Creator",
+    "description": "Create Anki deck from PDF file using OpenAI",
     "author": "Mason Fox",
     "version": "1.0.0",
     "minAnkiVersion": "2.1.0",
-    "docs": "https://link.to.your.documentation",
+    "docs": "https://github.com/Mason-Fox/anki-deck-creator/tree/main",
     "license": "MIT",
-    "tags": ["example", "ankiaddon"]
+    "tags": ["ankiaddon"]
 }
