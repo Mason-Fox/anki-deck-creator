@@ -5,10 +5,33 @@ from aqt import mw
 from aqt.utils import showInfo
 from aqt.qt import *
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtCore import QThread, pyqtSignal
 from anki.notes import Note
 
 from pypdf import PdfReader
 from openai import OpenAI
+
+failed_openai_call = False
+
+class Worker(QThread):
+    finished = pyqtSignal()
+    data_returned = pyqtSignal(object)  # Signal to emit returned data
+    error_occurred = pyqtSignal(str)  # Signal to emit error messages
+
+    def __init__(self, function, *args, **kwargs):
+        super().__init__()
+        self.function = function
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        try:
+            result = self.function(*self.args, **self.kwargs)
+            self.data_returned.emit(result)
+        except Exception as e:
+            self.error_occurred.emit(str(e))
+        finally:
+            self.finished.emit()
 
 def pdf_prompt():
     # Open a file dialog to get the path of the selected PDF file
@@ -20,19 +43,24 @@ def pdf_prompt():
     )
 
     if file_path:
-        return file_path
+        process_pdf(file_path)
     else:
         # Display a message if the user cancels the file dialog
         show_info("PDF processing canceled.")
-    
+        return
 
-def process_pdf(file_path):
-    show_info(f"Processing PDF: {file_path}")
+def show_processing_and_run(function, *args, **kwargs):
+    processing_dialog = QProgressDialog("Processing, this may take some time...", "Abort", 0, 0, mw)
+    processing_dialog.setWindowTitle("Please Wait")
+    processing_dialog.setWindowModality(Qt.WindowModal)
 
-    raw_text = extract_text_from_pdf(file_path)
-    #clean_text = clean_and_preprocess_text(raw_text)
+    worker = Worker(function, *args, **kwargs)
+    worker.data_returned.connect(create_deck)
+    worker.finished.connect(processing_dialog.close)
+    processing_dialog.canceled.connect(worker.terminate)
 
-    return raw_text
+    worker.start()
+    processing_dialog.exec_()
 
 def show_info(message):
     # Display an information message to the user
@@ -79,30 +107,53 @@ def clean_and_preprocess_text(raw_text):
 
     return cleaned_text
 
-def call_openai(text, key):
-    client = OpenAI(api_key=key)
+def call_openai(api_key, text):
+    """
+    Call OpenAI for card creation
+
+    Parameters:
+        text (str): PDF text content
+
+    Returns:
+        list: List of font\tback cards
+    """
+
+    client = OpenAI(api_key=api_key)
 
     # Instructions for GPT-3.5 to create flashcards
-    show_info("Generating Cards, this may take some time...")
-    system_message = "You are a flashcard generation assistant. You will be given a string of text that has been pulled from a presentation. Create a deck of flashcards based on the text content. Cards should be in the following format:\\nFront\\tBack\\nFront\\tBack\\n\n\nThis will be parsed by python, so keep that in mind when creating card formatting"
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": text}
-        ],
-        max_tokens=1000,
-        temperature=0.05 # Low Randomness
+    system_message = (
+        "Create flashcards from the provided text. For each flashcard, "
+        "identify a key phrase, word, or equation from the text and place it on the front. "
+        "On the back, provide definitions, explanitory information or relevant context. "
+        "Format each flashcard as 'front\\tback\\n'."
     )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo-16k",
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": text}
+            ],
+            max_tokens=5000,
+            temperature=0.05 # Low Randomness
+        )
+    except Exception as e:
+        show_info("message")
+        return
 
     flashcards_raw = response.choices[0].message.content.strip()
     # Split the string into cards
     cards = flashcards_raw.split('\n')
+
     return cards
 
 def create_deck(cards):
     collection = mw.col
-    deck_name = prompt_user("Deck Name", additional_info="Enter an existing deck name to add to a deck, or enter a unique Deck name to create a new Deck")
+    additional_info = "Enter an existing deck name to add to a deck, or enter a unique Deck name to create a new Deck"
+    deck_name = prompt_user("Deck Name", additional_info)
+    if deck_name is None:
+        show_info("Invalid Deck Name")
+        return
 
     # Get or create the deck
     deck_id = collection.decks.id(deck_name, create=True)
@@ -112,8 +163,8 @@ def create_deck(cards):
         try:
             front, back = card.split('\\t', 1)
             new_note = mw.col.new_note(note_type)
-            new_note["Front"] = front  # Front of the card
-            new_note["Back"] = back   # Back of the card
+            new_note["Front"] = front
+            new_note["Back"] = back
             new_note.note_type()["did"] = deck_id
             
             # Add the note to the current deck
@@ -121,6 +172,9 @@ def create_deck(cards):
 
         except ValueError:
             print(f"Invalid format for card: {card}")
+
+    # Refresh UI
+    mw.reset()
 
 def prompt_user(item, additional_info=None):
     dialog = QDialog(mw)
@@ -131,9 +185,9 @@ def prompt_user(item, additional_info=None):
     if additional_info is not None:
         # Additional Infomration section
         info_text_edit = QTextEdit()
-        info_text_edit.setReadOnly(True)  # Make the text edit read-only
+        info_text_edit.setReadOnly(True)
         info_text_edit.setText(f"{additional_info}")
-        info_text_edit.setStyleSheet("QTextEdit { background-color: #9ca6b8; }")  # Light grey background
+        info_text_edit.setStyleSheet("QTextEdit { background-color: #9ca6b8; }")
         layout.addWidget(info_text_edit)
 
     # Prompt Text
@@ -155,17 +209,46 @@ def prompt_user(item, additional_info=None):
     else:
         show_info(f"{item} Entry canceled.")
 
-def deck_creator():
+def retrieve_validate_api_key():
+    # Retrieve API Key
     config = mw.addonManager.getConfig(__name__)
-
-    pdf_path = pdf_prompt()
-    text = process_pdf(pdf_path)
-
     api_key = config.get("api_key")
     if not api_key:
-        api_key = prompt_user("API Key", "An OpenAI Account and API key are required, and will be used to communicate with OpenAI. For more information and instructions, see: https://platform.openai.com/docs/quickstart")
+        additional_info= (
+            "An OpenAI Account and API key are required, and will be used to communicate with OpenAI."
+            "For more information and instructions, see: https://platform.openai.com/docs/quickstart"
+        )
+        api_key = prompt_user("API Key", additional_info)
         config["api_key"] = api_key
 
-    cards = call_openai(text, api_key)
-    create_deck(cards)
-    mw.reset()
+    client = OpenAI(api_key=api_key)
+    try:
+        # Simple API call to check the API key validity
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "user",
+                    "content": "Say this is a test",
+                }
+            ],
+        )
+    except Exception as e:
+        show_info(f"OpenAI connection failed, please validate API key. \n\nError: {e}")
+        return None
+    
+    return api_key
+
+def process_pdf(file_path):
+    show_info(f"Processing PDF: {file_path}")
+
+    raw_text = extract_text_from_pdf(file_path)
+    #clean_text = clean_and_preprocess_text(raw_text)
+
+    # Retrieve API Key
+    api_key = retrieve_validate_api_key()
+    if api_key is None:
+        return
+
+    # Use the same processing window for different functions
+    cards = show_processing_and_run(call_openai, api_key, raw_text)
