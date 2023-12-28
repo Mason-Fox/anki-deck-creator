@@ -55,7 +55,10 @@ def show_processing_and_run(function, *args, **kwargs):
     processing_dialog.setWindowModality(Qt.WindowModal)
 
     worker = Worker(function, *args, **kwargs)
+    # Call create_deck with successful card return, show_info if error
     worker.data_returned.connect(create_deck)
+    worker.error_occurred.connect(show_info)
+
     worker.finished.connect(processing_dialog.close)
     processing_dialog.canceled.connect(worker.terminate)
 
@@ -107,7 +110,7 @@ def clean_and_preprocess_text(raw_text):
 
     return cleaned_text
 
-def call_openai(api_key, text):
+def call_openai(api_key, text, model):
     """
     Call OpenAI for card creation
 
@@ -117,7 +120,6 @@ def call_openai(api_key, text):
     Returns:
         list: List of font\tback cards
     """
-
     client = OpenAI(api_key=api_key)
 
     # Instructions for GPT-3.5 to create flashcards
@@ -127,19 +129,15 @@ def call_openai(api_key, text):
         "On the back, provide definitions, explanitory information or relevant context. "
         "Format each flashcard as 'front\\tback\\n'."
     )
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo-16k",
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": text}
-            ],
-            max_tokens=5000,
-            temperature=0.05 # Low Randomness
-        )
-    except Exception as e:
-        show_info("message")
-        return
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo-16k",
+        messages=[
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": text}
+        ],
+        max_tokens=5000,
+        temperature=0.05 # Low Randomness
+    )
 
     flashcards_raw = response.choices[0].message.content.strip()
     # Split the string into cards
@@ -209,17 +207,13 @@ def prompt_user(item, additional_info=None):
     else:
         show_info(f"{item} Entry canceled.")
 
-def retrieve_validate_api_key():
-    # Retrieve API Key
-    config = mw.addonManager.getConfig(__name__)
-    api_key = config.get("api_key")
-    if not api_key:
-        additional_info= (
-            "An OpenAI Account and API key are required, and will be used to communicate with OpenAI."
-            "For more information and instructions, see: https://platform.openai.com/docs/quickstart"
-        )
-        api_key = prompt_user("API Key", additional_info)
-        config["api_key"] = api_key
+def retrieve_validate_api_key(config):
+
+    additional_info= (
+        "An OpenAI Account and API key are required, and will be used to communicate with OpenAI."
+        "For more information and instructions, see: https://platform.openai.com/docs/quickstart"
+    )
+    api_key = prompt_user("API Key", additional_info)
 
     client = OpenAI(api_key=api_key)
     try:
@@ -229,26 +223,30 @@ def retrieve_validate_api_key():
             messages=[
                 {
                     "role": "user",
-                    "content": "Say this is a test",
+                    "content": "This is a test",
                 }
             ],
         )
     except Exception as e:
         show_info(f"OpenAI connection failed, please validate API key. \n\nError: {e}")
-        return None
-    
-    return api_key
+        return False
+
+    config["api_key"] = api_key
+    mw.addonManager.writeConfig(__name__, config)
+    return True
 
 def process_pdf(file_path):
-    show_info(f"Processing PDF: {file_path}")
+    #show_info(f"Processing PDF: {file_path}")
 
     raw_text = extract_text_from_pdf(file_path)
     #clean_text = clean_and_preprocess_text(raw_text)
 
-    # Retrieve API Key
-    api_key = retrieve_validate_api_key()
-    if api_key is None:
-        return
+    config = mw.addonManager.getConfig(__name__)
+
+    # Retrieve API Key if not set, if validation fails, exit
+    if not config["api_key"]:
+        if not retrieve_validate_api_key(config):
+            return
 
     # Use the same processing window for different functions
-    cards = show_processing_and_run(call_openai, api_key, raw_text)
+    cards = show_processing_and_run(call_openai, config["api_key"], raw_text, config["model"])
