@@ -1,7 +1,7 @@
 # Anki Deck Creator
 
 ## Change Log
-- See [Link Text](CHANELOG.md)
+- See [CHANGELOG.md](CHANELOG.md)
 
 # How to Use
 
