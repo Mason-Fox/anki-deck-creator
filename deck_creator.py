@@ -11,8 +11,6 @@ from anki.notes import Note
 from pypdf import PdfReader
 from openai import OpenAI
 
-failed_openai_call = False
-
 class Worker(QThread):
     finished = pyqtSignal()
     data_returned = pyqtSignal(object)  # Signal to emit returned data
@@ -140,7 +138,6 @@ def call_openai(api_key, text, model):
     )
 
     flashcards_raw = response.choices[0].message.content.strip()
-    # Split the string into cards
     cards = flashcards_raw.split('\n')
 
     return cards
