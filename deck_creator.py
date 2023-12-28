@@ -135,7 +135,7 @@ def call_openai(api_key, text, model):
             {"role": "system", "content": system_message},
             {"role": "user", "content": text}
         ],
-        max_tokens=5000,
+        max_tokens=10000,
         temperature=0.05 # Low Randomness
     )
 
@@ -215,6 +215,9 @@ def retrieve_validate_api_key(config):
     )
     api_key = prompt_user("API Key", additional_info)
 
+    if not api_key:
+        return 
+    
     client = OpenAI(api_key=api_key)
     try:
         # Simple API call to check the API key validity
