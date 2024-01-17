@@ -39,4 +39,10 @@
 
 # Development
 - Anki currently requires add-ons' third-party libraries to be bundled with the source code. Latest library releases will be updated on each add on release.
-- TODOs: release, refine system prompt, Pre/post processing data?
+- TODO:
+    - Need to test/enable on Windows (due to manual library compilation)
+    - Dynamic context window based on PDF length
+    - Dynamic Deck size based on PDF length
+    - Automate Mulitple calls for long PDFs
+    - refine system prompt
+    - Pre/post processing data?
